@@ -17,13 +17,11 @@ Including another URLconf
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from solroute.views import hello
-from django.contrib.auth.views import login, logout
-
-
+from solroute.views import register
+from django.contrib.auth.models import User
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^hello/$', hello),
-    url(r'^accounts/login/$',  login),
-    url(r'^accounts/logout/$', logout),
+    url(r'^register/$', register),
 ]
