@@ -12,9 +12,9 @@ def driver():
     key = "AIzaSyASnR1SVRSpja-GdlcSWfZQz51ZeasrurY"
     origin = "40.635436,-73.950093"   #(My House)
     destination = "40.717946,-74.013905"   #(Stuy)
-    mode = "walking"
+    mode = "walking" #modes include walking, driving, bicycling, and transit
     avoid = "" #maybe highways
-    polyline = getPolyline(key, origin, destination, mode)
+    polyline = getPolyline(key, origin, destination, mode, avoid)
     
     
     #List of points obtained from the directions polyline
@@ -60,7 +60,7 @@ def pointsToLine( point1, point2 ):
     #point-slope form of line:   y = mx + b
     if (x2 - x1) == 0:
         m = "undefined" #vertical line
-        b = "undefined" #no y-intercept
+        b = x1 #no y-intercept -> return x-coord of one point instead (for later calculation)
     else:
         m = float(y2 - y1) / float(x2 - x1)   # m = delta y / delta x
         b = y1 - (m * x1) #using 1 point and slope to calculate y-intercept: b = y - mx
@@ -84,6 +84,12 @@ def distPointToLine( point, line ):
     y = point[1] #point y coord
     m = line['m'] #slope of line
     b = line['b'] #y-intercept of line
+    
+    
+    if type(m) != float:
+        #distance is horizontal distance from point to vertical line
+        distance = abs(y - b)
+        return distance
     
     distance = abs((m * x) + b - y) / math.sqrt(1 + (m ** 2))
     return distance
