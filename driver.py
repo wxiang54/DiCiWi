@@ -1,5 +1,4 @@
-import math
-import requests
+import math, requests, time
 from pyicloud import PyiCloudService
 from polyline.codec import PolylineCodec
 
@@ -30,7 +29,6 @@ def driver():
     
     #Test if mobile device is too far from path
     threshold = .001 #margin of GPS error
-    minDistance = threshold + 1 #placeholder value
     for line in lines:
         distDeviceToRoute = distPointToLine(location, line)
         if distDeviceToRoute < minDistance:
@@ -45,12 +43,22 @@ def driver():
     
     while not(atDestination):
         updateLocation()
+        minDistance = threshold + 1 #placeholder value, reset minDistance
+
+        #update minDistance
+        for line in lines:
+            distDeviceToRoute = distPointToLine(location, line)
+            if distDeviceToRoute < minDistance:
+                minDistance = distDeviceToRoute
+        
         if distPointToPoint(location, destination) < threshold:
             atDestination = True
             break
         elif minDistance > threshold:
             device.play_sound()
             print "ALERT: iDevice has strayed beyond threshold of path"
+            
+        time.sleep(1)
             
     
     
@@ -175,6 +183,8 @@ def getPolyline( key, origin, destination, mode, avoid ):
     return polyline
     
 # =======================================================================    
+    
+    
     
 driver()
     
