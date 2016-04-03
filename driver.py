@@ -52,7 +52,7 @@ def driver():
         elif minDistance > threshold:
             device.play_sound()
             print "ALERT: iDevice has strayed beyond threshold of path"
-            
+        print "gotee"
         time.sleep(1)
             
     
