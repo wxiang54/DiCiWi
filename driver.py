@@ -28,12 +28,7 @@ def driver():
     
     
     #Test if mobile device is too far from path
-    threshold = .001 #margin of GPS error
-    for line in lines:
-        distDeviceToRoute = distPointToLine(location, line)
-        if distDeviceToRoute < minDistance:
-            minDistance = distDeviceToRoute
-    
+    threshold = .001 #margin of GPS error\
 
 # =======================================================================    
     atDestination = False
