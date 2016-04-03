@@ -43,12 +43,12 @@ def driver():
     #convert string to tuple
     destinationRaw = (destination.split(",")[0] , destination.split(",")[1])
     
-    while !atDestination:
+    while not(atDestination):
         updateLocation()
-        if abs(location - destination):
+        if distPointToPoint(location, destination) < threshold:
             atDestination = True
             break
-        else if minDistance > threshold:
+        elif minDistance > threshold:
             device.play_sound()
             print "ALERT: iDevice has strayed beyond threshold of path"
             
@@ -58,18 +58,18 @@ def driver():
 
 def pointsToLine( point1, point2 ):    
     ''' 
-    (list, list) -> dict
+    (tuple, tuple) -> dict
     
-    points in format: [ <latitude>, <longitude> ]
+    points in format: ( <latitude>, <longitude> )
     line in format: { 'm':<slope>, 'b':<y-intercept> }
     
-    Converts 'point1' and 'point2'
+    Converts tuples 'point1' and 'point2'
     to 'line' in slope-interept form
     '''
-    x1 = point1[0]
-    x2 = point2[0]
-    y1 = point1[1]
-    y2 = point2[1]
+    x1 = float(point1[0])
+    x2 = float(point2[0])
+    y1 = float(point1[1])
+    y2 = float(point2[1])
     
     #point-slope form of line:   y = mx + b
     if (x2 - x1) == 0:
@@ -83,14 +83,33 @@ def pointsToLine( point1, point2 ):
     return line
     
     
+def distPointToPoint( point1, point2 ):
+    '''
+    (tuple, tuple) -> float
+    
+    points in format: ( <latitude>, <longitude> )
+    
+    Converts tuples 'point1' and 'point2'
+    to a float 'distance' from one point to the other
+    Utilizes Cartesian distance formula
+    '''
+    x1 = float(point1[0]) #point x coord
+    x2 = float(point1[1]) #point y coord
+    y1 = float(point2[0]) #slope of line
+    y2 = float(point2[1]) #y-intercept of line
+    
+    distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    return distance 
+    
+    
 def distPointToLine( point, line ):
     '''
-    (list, dict) -> float
+    (tuple, dict) -> float
     
-    point in format: [ <latitude>, <longitude> ]
+    point in format: ( <latitude>, <longitude> )
     line in format: { 'm':<slope>, 'b':<y-intercept> }
     
-    Converts list 'point' and dict 'line'
+    Converts ltuple 'point' and dict 'line'
     to a float 'distance' from the point to the line
     Utilizes point-to-distance formula
     '''
@@ -127,7 +146,7 @@ def iCloudLogin():
     device = appleData.devices[0]   
     
     
-def updateLocation(device):
+def updateLocation():
     global device, location
     '''
     object -> void
