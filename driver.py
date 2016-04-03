@@ -3,11 +3,12 @@ import requests
 from pyicloud import PyiCloudService
 from polyline.codec import PolylineCodec
 
+device = None #placeholder, updates after iCloudLogin()
+location = (0,0) #placeholder, updates after updateLocation()
+
 def driver():
-    device = None #placeholder
-        
-    #Tuple containing device latitude and longitude
-    deviceLocation = iCloudLogin()
+    
+    iCloudLogin()
     
     key = "AIzaSyASnR1SVRSpja-GdlcSWfZQz51ZeasrurY"
     origin = "40.635436,-73.950093"   #(My House)
@@ -31,13 +32,26 @@ def driver():
     threshold = .001 #margin of GPS error
     minDistance = threshold + 1 #placeholder value
     for line in lines:
-        distDeviceToRoute = distPointToLine(deviceLocation, line)
+        distDeviceToRoute = distPointToLine(location, line)
         if distDeviceToRoute < minDistance:
             minDistance = distDeviceToRoute
-    if minDistance > threshold:
-        device.play_sound()
-        print "ALERT: iDevice has strayed beyond threshold of path"
-        
+    
+
+# =======================================================================    
+    atDestination = False
+   
+    #convert string to tuple
+    destinationRaw = (destination.split(",")[0] , destination.split(",")[1])
+    
+    while !atDestination:
+        updateLocation()
+        if abs(location - destination):
+            atDestination = True
+            break
+        else if minDistance > threshold:
+            device.play_sound()
+            print "ALERT: iDevice has strayed beyond threshold of path"
+            
     
     
 # =======================================================================
@@ -98,13 +112,10 @@ def distPointToLine( point, line ):
 def iCloudLogin():
     global device
     '''
-    void -> tuple
+    void -> void
     
-    tuple in format (latitude, longitude)
-    
-    Utilizes pyicloud module to obtain location of iDevice
-    and modify global var 'device'
-    
+    Utilizes pyicloud module to log access iCloud data on iDevice
+    and update global var 'device'
     '''        
     appleID = raw_input('Enter your Apple ID: ')
     applePass = raw_input('Enter your password: ')
@@ -113,11 +124,19 @@ def iCloudLogin():
     
     # Choose first device
         # Optional: add fxnality for multiple devices (be able to choose)
-    device = appleData.devices[0]
+    device = appleData.devices[0]   
+    
+    
+def updateLocation(device):
+    global device, location
+    '''
+    object -> void
+        
+    Utilizes pyicloud module to update location of iDevice
+    '''  
     deviceLat = device.location()['latitude']
     deviceLong = device.location()['longitude']
-    
-    return (deviceLat, deviceLong)
+    location =  (deviceLat, deviceLong)
     
     
     
