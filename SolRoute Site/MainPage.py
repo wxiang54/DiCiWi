@@ -19,7 +19,7 @@ for n in codelist:
 def logcheck():
     for n in cll:
         if n[0]==form.getvalue('user') and str(n[1])==str(form.getvalue('id')) and n[2]==ip:
-            return """Please enter your child's starting location and the destination.<br><br><form><div id="locationField">
+            return """Please enter your child's starting location and the destination.<br><br><form action="runApp.py"><div id="locationField">
                 Starting Point:<br><input id="autocomplete" placeholder="Enter your address" onFocus="geolocate()" type="text" name="start">
                 
                <br>

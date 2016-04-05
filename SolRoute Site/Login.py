@@ -14,27 +14,44 @@ m = md5.new()
 
 cgitb.enable()
 workingpassword=""
-html="""<!DOCTYPE html>
-    <html>
-    <head>
+html="""
+<!DOCTYPE html>
+<html>
+
+<head>
     <link rel="stylesheet" type="text/css" href="style.css">
     <title> Log In
     </title>
-    </head>
-    <body><img src="drawing.png"><br>"""
+</head>
 
-html2=""" <form action="Login.py" method="GET"><table>
-    <th colspan="2"> Create An Account </th>
-    <tr> <td>
-    Username</td>
-    <td> <input type="text" name="Username"> </td> </tr>
-    <br>
-    <tr> <td>Select a Password:</td> <td> <input type="password" name="Password"> </td> </tr>
-    <br>
-    <tr><td>Confirm Password:</td> <td> <input type="password" name="Confirmation"> </td> </tr>
-    <br>
-    <tr><td>Submit:</td> <td><input type="submit" name="Submit" value="Submit"></td></tr> <table>
-    </form>
+<body><img src="drawing.png">
+    <br>"""
+
+html2=""" 
+<form action="Login.py" method="GET">
+    <table>
+        <th colspan="2"> Create An Account </th>
+        <tr>
+            <td>Username</td>
+            <td><input type="text" name="Username"> </td>
+        </tr>
+        <br>
+        <tr>
+            <td>Select a Password:</td>
+            <td><input type="password" name="Password"> </td>
+        </tr>
+        <br>
+        <tr>
+            <td>Confirm Password:</td>
+            <td><input type="password" name="Confirmation"> </td>
+        </tr>
+        <br>
+        <tr>
+            <td>Submit:</td>
+            <td><input type="submit" name="Submit" value="Submit"></td>
+        </tr>
+        <table>
+</form>
     """
 form=cgi.FieldStorage()
 keys=form.keys()
