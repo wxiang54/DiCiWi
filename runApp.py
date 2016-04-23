@@ -1,5 +1,5 @@
-#!/usr/bin/python
-print "content-type:text/html\n"
+#! /usr/bin/python
+print "content-type:text/html\r\n"
 import cgi
 import cgitb
 import os
@@ -11,18 +11,22 @@ from polyline.codec import PolylineCodec
 device = None #placeholder, updates after iCloudLogin()
 location = (0,0) #placeholder, updates after updateLocation()
 
-def driver():
+
+def driver(appleID, applePass, originAddr, destAddr):
     
-    iCloudLogin()
+    iCloudLogin(appleID, applePass)
     
+	
     key = "AIzaSyASnR1SVRSpja-GdlcSWfZQz51ZeasrurY"
-    origin = "40.635436,-73.950093"   #(My House)
-    destination = "40.717946,-74.013905"   #(Stuy)
+
+    origin = getCoords(key, originAddr)
+    dest = getCoords(key, destAddr)
+
     mode = "walking" #modes include walking, driving, bicycling, and transit
     avoid = "" #maybe highways
-    polyline = getPolyline(key, origin, destination, mode, avoid)
+    polyline = getPolyline(key, origin, dest, mode, avoid)
     
-    
+   	  
     #List of points obtained from the directions polyline
     points = PolylineCodec().decode(polyline)
     
@@ -31,17 +35,15 @@ def driver():
     lines = []
     for i in range(len(points) - 1):
         lines.append(pointsToLine( points[i], points[i + 1] ))
-    
+        
     
     #Test if mobile device is too far from path
-    threshold = .001 #margin of GPS error\
+    threshold = .001 #margin of GPS error
+
     
     # =======================================================================
     atDestination = False
-    
-    #convert string to tuple
-    destinationRaw = (destination.split(",")[0] , destination.split(",")[1])
-    '''
+        
     while not(atDestination):
         updateLocation()
         minDistance = threshold + 1 #placeholder value, reset minDistance
@@ -51,17 +53,15 @@ def driver():
             distDeviceToRoute = distPointToLine(location, line)
             if distDeviceToRoute < minDistance:
                 minDistance = distDeviceToRoute
-        
-        if distPointToPoint(location, destination) < threshold:
+                
+        if distPointToPoint(location, dest) < threshold:
             atDestination = True
             break
         elif minDistance > threshold:
-            device.play_sound()
+            #device.play_sound()
             print "ALERT: iDevice has strayed beyond threshold of path"
-        time.sleep(1)
-    '''
-    print "Wello, Horld!"
-
+            time.sleep(1)
+    # =======================================================================
 
 
 # =======================================================================
@@ -88,7 +88,7 @@ def pointsToLine( point1, point2 ):
     else:
         m = float(y2 - y1) / float(x2 - x1)   # m = delta y / delta x
         b = y1 - (m * x1) #using 1 point and slope to calculate y-intercept: b = y - mx
-    
+        
     line = {'m':m, 'b':b}
     return line
 
@@ -138,7 +138,7 @@ def distPointToLine( point, line ):
     return distance
 
 
-def iCloudLogin():
+def iCloudLogin(username, password):
     global device
     '''
         void -> void
@@ -146,9 +146,9 @@ def iCloudLogin():
         Utilizes pyicloud module to log access iCloud data on iDevice
         and update global var 'device'
         '''
-    appleID = raw_input('Enter your Apple ID: ')
-    applePass = raw_input('Enter your password: ')
     
+    appleID = username
+    applePass = password
     appleData = PyiCloudService(appleID, applePass)
     
     # Choose first device
@@ -168,6 +168,23 @@ def updateLocation():
     location =  (deviceLat, deviceLong)
 
 
+def getCoords( key, address ):
+    '''
+    (str, str) -> str
+        
+    Utilizes GoogleMaps Geocoding API to obtain string of coordinates 
+
+    Output string in form: "<latitude>,<longitude>"
+    '''
+
+    payload = {'key':key, 'address':originAddr}
+    r = requests.get('https://maps.googleapis.com/maps/api/geocode/json?', params=payload, verify=False)
+
+    json = r.json()
+    coordDict = json["results"][0]["geometry"]["location"]
+
+    return "%s,%s" % (coordDict['lat'], coordDict['lng'])
+
 
 def getPolyline( key, origin, destination, mode, avoid ):
     '''
@@ -177,7 +194,7 @@ def getPolyline( key, origin, destination, mode, avoid ):
         of a path from origin to destination points
         '''
     payload = {'origin':origin, 'destination':destination, 'key':key, 'mode':mode, 'avoid':avoid}
-    r = requests.get('https://maps.googleapis.com/maps/api/directions/json?', params=payload)
+    r = requests.get('https://maps.googleapis.com/maps/api/directions/json?', params=payload, verify=False)
     
     jsonData = r.json()
     route = jsonData["routes"][0]
@@ -192,40 +209,43 @@ print """
 <!DOCTYPE html>
 <html>
 <head>    <link rel="stylesheet" type="text/css" href="style.css">
-<title>test</title></head>
-<body><br><br><br><br> Child's Location: <br> <br>
+
+<title>Progress:</title>
+
+<link rel="shortcut icon" href="http://www.sol-route.com/favycon.ico" type="image/x-icon">
+<link rel="icon" href="sol-route.com/favycon.ico" type="image/x-icon">
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-76223201-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</head>
+<body><br>
+<h1>Running application...</h1>
+<img src="http://tk20.com/img/webinars/loading-circles.gif">
+
 """
 
 cgitb.enable()
 form=cgi.FieldStorage()
 keys=form.keys()
 
-print form.getvalue('start')
-print "<br> <br>    Child's Destination: <br> <br>"
-print form.getvalue('end')
+appleID = form.getvalue("appleID")
+applePass = form.getvalue("applePass")
+originAddr = form.getvalue("start")
+destAddr = form.getvalue("end")
 
-key = "AIzaSyASnR1SVRSpja-GdlcSWfZQz51ZeasrurY"
-address1=form.getvalue('start')
-address2=form.getvalue('end')
-payload1 = {'key':key, 'address':address1}
-payload2 = {'key':key, 'address':address2}
 
-r1 = requests.get('https://maps.googleapis.com/maps/api/geocode/json?', params=payload1)
-r2 = requests.get('https://maps.googleapis.com/maps/api/geocode/json?', params=payload2)
-
-jsonData1 = r1.json()
-jsonData2 = r2.json()
-
-coordDict1 = jsonData1["results"][0]["geometry"]["location"]
-coordDict2 = jsonData2["results"][0]["geometry"]["location"]
-
-coordinates1 = "%s,%s" % (coordDict1['lat'], coordDict1['lng'])
-coordinates2 = "%s,%s" % (coordDict2['lat'], coordDict2['lng'])
-print "<br>"
-print coordinates1
-print coordinates2
 
 print """
 </body>
 </html>
 """
+
+#driver(appleID, applePass, originAddr, destAddr)
