@@ -1,0 +1,23 @@
+{% extends "template.html" %}
+
+{% block title %} iCloud Login {% endblock title %}
+
+{% block body_title %} Log into your iCloud Account {% endblock body_title %}
+
+{% block content %}
+	<form action="/app/" method="POST">
+		<center>
+			For your safety, your iCloud credentials will not be stored anywhere.
+			<br>
+			<br>
+			<input type="text" name="appleID" placeholder="Apple ID">
+			<br>
+			<br>
+			<input type="password" name="applePass" placeholder="Password">
+			<br>
+			<br>
+			<br>
+			<input type="submit" name="submit">
+			</center>
+	</form>
+{% endblock content %}

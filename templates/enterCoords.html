@@ -1,0 +1,41 @@
+{% extends "template.html" %}
+
+
+{% block head %}
+  <title>Enter Coords</title>
+  <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+  <script>
+    var autocomplete;
+    var autocomplete2;
+    function initialize() {
+      autocomplete = new google.maps.places.Autocomplete(
+      /** @type {HTMLInputElement} */(document.getElementById('autocomplete')));
+      autocomplete2 = new google.maps.places.Autocomplete(
+      /** @type {HTMLInputElement} */(document.getElementById('autocomplete2')));
+      google.maps.event.addListener(autocomplete, 'place_changed', function() {});
+      google.maps.event.addListener(autocomplete2, 'place_changed', function() {});
+    }
+  </script>
+{% endblock head %}
+
+{% block body_title %} Enter Start and End Locations {% endblock body_title %}
+
+{% block onload %}
+  initialize()
+{% endblock onload %}
+
+{% block content %}
+  <br>
+  <form method="POST">
+    <h5>Origin:</h5>
+    <input id="autocomplete" placeholder="Enter starting point address" onFocus="geolocate()" type="text" name="origin">
+    <br>
+    <br>
+    <h5>Destination:</h5>
+    <input id="autocomplete2" placeholder="Enter ending point address" onFocus="geolocate()" type="text" name="destin">
+    <br>
+    <br>
+    <br>
+    <input type="submit" name="submit" value="Submit">
+  </form>
+{% endblock content %}

@@ -1,0 +1,50 @@
+{% extends "template.html" %}
+
+{% block title %} SolRoute Application {% endblock title %}
+
+{% block body_title %} Running Application... {% endblock body_title %}
+
+{% block content %}
+  <center>
+    <table>
+      <tr>
+
+          <center>
+            <iframe src="/runApp/?name=routeInfo" id="routeInfo" width="60%" height="160px">
+              <p>Could not be loaded</p>
+            </iframe>
+          </center>
+
+      </tr>
+
+      <tr>
+        <td>
+          <iframe src="/runApp/?name=roadMap" width="100%" height="425px" id="roadMap">
+            <p>Could not be loaded</p>
+          </iframe>
+        </td>
+        <td>
+          <iframe src="/runApp/?name=satMap" width="100%" height="425px" id="satMap">
+            <p>Could not be loaded</p>
+          </iframe>
+        </td>
+      </tr>
+    </table>
+  </center>
+
+
+  <script>
+    setInterval(
+      function() {
+        document.getElementById('routeInfo').src += '';
+        document.getElementById('satMap').src += '';
+      },
+      10000);
+
+    setInterval(
+      function() {
+        document.getElementById('roadMap').src += '';
+      },
+      30000);
+  </script>
+{% endblock content %}

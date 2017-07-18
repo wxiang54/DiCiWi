@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+
+{% set glob={} %}
+
+<html>
+	<head>
+		<link type="text/css" rel="stylesheet" href="/static/css/materialize.css"  media="screen,projection"/>
+		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+		{% block head %}
+			<title>
+				{% block title %} SolRoute {% endblock title %}
+			</title>
+		{% endblock head %}
+	</head>
+
+
+	{% with messages = get_flashed_messages( with_categories = true ) %}
+		{% if messages %}
+			{% set category = messages[0][0] %}
+			{% set message = messages[0][1] %}
+			{% set msg = glob.update({'message':message}) %}
+			{% if category == 'success' %}
+				{% set x = glob.update({'toastColor':"61FF5C"}) %} {# green #}
+			{% elif category == 'error' %}
+				{% set x = glob.update({'toastColor':"FF7A7A"}) %} {# red #}
+			{% else %}
+				{% set x = glob.update({'toastColor':"5CE4FF"}) %} {# blue #}
+			{% endif %}
+		{% endif %}
+	{% endwith %}
+
+
+<body onload="
+{% if glob['message'] is defined %}
+	{% set toastColor = glob.get('toastColor') %}
+	{% set message = glob.get('message') %}
+	var $toastContent = $('<span><font color={{ toastColor }}> {{ message }} </font></span>');
+	Materialize.toast($toastContent, 5000);
+{% endif %}
+{% block onload %}
+{% endblock onload %}
+">
+	{% block body %}
+
+	<main>
+
+		<h2>{% block body_title %} SolRoute {% endblock body_title %}</h2>
+
+		{% block navbar %}
+			<ul id="slide-out" class="side-nav fixed blue">
+				<li class="logo">
+					<a class="white-text">
+						<div class="container">
+							<div class="col s12">
+								Sol-Route
+							</div>
+						</div>
+					</a>
+				</li>
+
+				<li>
+					<a class="waves-effect waves-light white-text" href="/">
+	    			<i class="small material-icons">home</i> &nbsp; Home
+	    		</a>
+    		</li>
+
+    		<li>
+					<a class="waves-effect waves-light white-text" href="/login">
+	    			<i class="small material-icons">vpn_key</i> &nbsp; Login
+	  			</a>
+    		</li>
+
+    		<li>
+					<a class="waves-effect waves-light white-text" href="/register">
+    				<i class="small material-icons">assignment</i> &nbsp; Register
+    			</a>
+    		</li>
+
+    		<li>
+					<a class="waves-effect waves-light white-text" href="/app">
+    				<i class="small material-icons">data_usage</i> &nbsp; Run Application
+    			</a>
+    		</li>
+
+				<li>
+					<a class="waves-effect waves-light white-text" href="/about">
+    				<i class="small material-icons">info</i> &nbsp; About Us
+    			</a>
+    		</li>
+
+				<li>
+					<a class="waves-effect waves-light white-text" href="/logout">
+    				<i class="small material-icons">vpn_lock</i> &nbsp; Log Out
+    			</a>
+    		</li>
+    	</ul>
+		{% endblock navbar %}
+
+
+		<p>
+			{% block content %}
+			{% endblock content %}
+		</p>
+	</main>
+	{% endblock body %}
+	<br><br>
+</body>
+
+
+{% block footer %}
+	<footer class="page-folder blue">
+		<div class="footer-copyright blue darken-1">
+			<br>
+			<div class="container grey-text text-lighten-4">
+				© 2016 Team Sol-Route
+				<a class="grey-text text-lighten-4 right">Powered by Materialize</a>
+			</div>
+			<br>
+		</div>
+	</footer>
+{% endblock footer %}
+
+<!-- Google Analytics -->
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-76223201-1', 'auto');
+	ga('send', 'pageview');
+</script>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript" src="/static/js/materialize.js"></script>
+
+
+</html>
